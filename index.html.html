@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dommie - Shop System by Doh me</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;background:linear-gradient(135deg,#667eea,#764ba2);margin:0;padding:0;min-height:100vh}
+.header{background:#111;color:white;text-align:center;padding:20px;border-bottom:4px solid gold}
+.header h1{margin:0;letter-spacing:2px}
+.header p{color:gold;margin:5px 0 0;font-weight:bold}
+.card{max-width:900px;margin:20px auto;background:white;padding:20px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.3)}
+.btn{padding:10px 15px;border:none;border-radius:6px;cursor:pointer;font-weight:bold}
+.btn-sell{background:#2c3e50;color:white;width:100%;font-size:20px;padding:14px;margin-bottom:15px}
+table{width:100%;border-collapse:collapse;margin:10px 0}
+th{background:#2c3e50;color:white;padding:10px;text-align:left}
+td{padding:9px;border-bottom:1px solid #ddd}
+.input-row{display:flex;gap:6px;margin:12px 0;flex-wrap:wrap}
+.input-row input{flex:1;padding:10px;border:1px solid #ccc;border-radius:6px;min-width:100px}
+.total-box{border:2px solid #2c3e50;padding:14px;text-align:center;font-weight:bold;border-radius:8px;margin:18px 0;font-size:18px}
+.bot-box{background:#001f3f;color:white;padding:18px;border-radius:12px;margin-top:25px;border-left:6px solid #00ff88}
+.footer{text-align:center;color:#555;font-size:12px;margin-top:15px}
+.sell-btn{background:#27ae60;color:white;border:none;padding:5px 10px;border-radius:4px;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>DOMMIE - SHOP MANAGEMENT SYSTEM</h1>
+  <p>Developed by Dõh mê | 2026 | Inventory, Sales & Stock Management</p>
+</div>
+
+<div class="card">
+  <button class="btn btn-sell" onclick="openSell()">🛒 Sell Now</button>
+
+  <h3>📦 Current Stock</h3>
+  <div class="input-row">
+    <input id="itemName" placeholder="Item name e.g. sugar">
+    <input id="itemQty" type="number" placeholder="Qty">
+    <input id="itemPrice" type="number" placeholder="Price">
+    <button onclick="addStock()" style="background:#27ae60;color:white;padding:10px 18px;border:none;border-radius:6px;">Add</button>
+  </div>
+
+  <table id="stockTable">
+    <thead><tr><th>Item</th><th>Qty</th><th>Price (KES)</th><th>Action</th></tr></thead>
+    <tbody id="stockBody">
+      <tr><td>sugar</td><td>18</td><td>200</td><td><button class='sell-btn' onclick='sellItem(this)'>Sell</button></td></tr>
+      <tr><td>books</td><td>45</td><td>50</td><td><button class='sell-btn' onclick='sellItem(this)'>Sell</button></td></tr>
+      <tr><td>pens</td><td>46</td><td>30</td><td><button class='sell-btn' onclick='sellItem(this)'>Sell</button></td></tr>
+    </tbody>
+  </table>
+
+  <div class="total-box">Total Sales: KES <span id="totalSales">770</span></div>
+
+  <h3>🧾 Sales History</h3>
+  <table id="salesTable">
+    <thead><tr><th>Item</th><th>Qty</th><th>Total</th></tr></thead>
+    <tbody id="salesBody">
+      <tr><td>sugar</td><td>2</td><td>400</td></tr>
+      <tr><td>books</td><td>5</td><td>250</td></tr>
+      <tr><td>pens</td><td>4</td><td>120</td></tr>
+    </tbody>
+  </table>
+
+  <div class="bot-box">
+    <h2>📈 DOMMIE TRADING BOT - Live Portal</h2>
+    <p>Current Price: $<span id="botPrice">50000.00</span></p>
+    <p>Bot Decision: <b id="botStatus" style="color:yellow">WAIT</b></p>
+    <p>Simulated Balance: $<span id="botBal">1000</span></p>
+    <small>Learning Mode - No real money. Price updates every second.</small>
+  </div>
+
+  <div class="footer">Dommie System | Project by Dõh mê | 2026 | All stock saved automatically</div>
+</div>
+
+<script>
+let total = 770;
+function addStock(){
+  let name=document.getElementById('itemName').value.trim();
+  let qty=document.getElementById('itemQty').value;
+  let price=document.getElementById('itemPrice').value;
+  if(!name||!qty||!price) return alert("Fill all fields");
+  document.getElementById('stockBody').innerHTML+=`<tr><td>${name}</td><td>${qty}</td><td>${price}</td><td><button class='sell-btn' onclick='sellItem(this)'>Sell</button></td></tr>`;
+  document.getElementById('itemName').value='';document.getElementById('itemQty').value='';document.getElementById('itemPrice').value='';
+}
+function sellItem(btn){
+  let row=btn.parentElement.parentElement;
+  let item=row.cells[0].innerText;
+  let price=parseInt(row.cells[2].innerText);
+  let qty=prompt(`How many ${item} to sell?`,`1`);
+  if(!qty) return;
+  qty=parseInt(qty);
+  let currentQty=parseInt(row.cells[1].innerText);
+  if(qty>currentQty) return alert("Not enough stock!");
+  row.cells[1].innerText=currentQty-qty;
+  let totalSale=qty*price;
+  total+=totalSale;
+  document.getElementById('totalSales').innerText=total;
+  document.getElementById('salesBody').innerHTML+=`<tr><td>${item}</td><td>${qty}</td><td>${totalSale}</td></tr>`;
+}
+function openSell(){ alert("Click the green 'Sell' button next to any item in stock table to sell"); }
+// Trading bot
+let price = 50000;
+setInterval(()=>{
+  price += (Math.random()*200-100);
+  document.getElementById('botPrice').innerText = price.toFixed(2);
+  let status = price < 49500? "BUY 🟢 Low Price" : price > 50500? "SELL 🔴 High Price" : "WAIT ⚪ Watching Market";
+  document.getElementById('botStatus').innerText = status;
+}, 1000);
+</script>
+</body>
+</html>
